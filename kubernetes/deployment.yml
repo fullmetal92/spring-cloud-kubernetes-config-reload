@@ -1,0 +1,165 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ck-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ck-app
+  template:
+    metadata:
+      labels:
+        app: ck-app
+    spec:
+      containers:
+        - name: ck-app
+          image: fatal1ty92/ck-app:v2
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "sh"
+                  - "-c"
+                  - "sleep 10"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ck-app
+  namespace: default
+spec:
+  selector:
+    app: ck-app
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer
+
+#---
+#apiVersion: v1
+#kind: List
+#items:
+#  - apiVersion: v1
+#    kind: Service
+#    metadata:
+#      labels:
+#        app: spring-cloud-kubernetes-configuration-watcher
+#      name: spring-cloud-kubernetes-configuration-watcher
+#    spec:
+#      ports:
+#        - name: http
+#          port: 8888
+#          targetPort: 8888
+#      selector:
+#        app: spring-cloud-kubernetes-configuration-watcher
+#      type: ClusterIP
+#  - apiVersion: v1
+#    kind: ServiceAccount
+#    metadata:
+#      labels:
+#        app: spring-cloud-kubernetes-configuration-watcher
+#      name: spring-cloud-kubernetes-configuration-watcher
+#  - apiVersion: rbac.authorization.k8s.io/v1
+#    kind: RoleBinding
+#    metadata:
+#      labels:
+#        app: spring-cloud-kubernetes-configuration-watcher
+#      name: spring-cloud-kubernetes-configuration-watcher:view
+#    roleRef:
+#      kind: Role
+#      apiGroup: rbac.authorization.k8s.io
+#      name: namespace-reader
+#    subjects:
+#      - kind: ServiceAccount
+#        name: spring-cloud-kubernetes-configuration-watcher
+#  - apiVersion: rbac.authorization.k8s.io/v1
+#    kind: Role
+#    metadata:
+#      namespace: default
+#      name: namespace-reader
+#    rules:
+#      - apiGroups: ["", "extensions", "apps"]
+#        resources: ["configmaps", "pods", "services", "endpoints", "secrets"]
+#        verbs: ["get", "list", "watch"]
+#  - apiVersion: apps/v1
+#    kind: Deployment
+#    metadata:
+#      name: spring-cloud-kubernetes-configuration-watcher-deployment
+#    spec:
+#      selector:
+#        matchLabels:
+#          app: spring-cloud-kubernetes-configuration-watcher
+#      template:
+#        metadata:
+#          labels:
+#            app: spring-cloud-kubernetes-configuration-watcher
+#        spec:
+#          serviceAccount: spring-cloud-kubernetes-configuration-watcher
+#          containers:
+#            - name: spring-cloud-kubernetes-configuration-watcher
+#              image: springcloud/spring-cloud-kubernetes-configuration-watcher:2.0.1-SNAPSHOT
+#              imagePullPolicy: IfNotPresent
+#              readinessProbe:
+#                httpGet:
+#                  port: 8888
+#                  path: /actuator/health/readiness
+#              livenessProbe:
+#                httpGet:
+#                  port: 8888
+#                  path: /actuator/health/liveness
+#              ports:
+#                - containerPort: 8888
+
+#---
+#
+#kind: Role
+#apiVersion: rbac.authorization.k8s.io/v1
+#metadata:
+#  namespace: default
+#  name: namespace-reader
+#rules:
+#  - apiGroups: ["", "extensions", "apps"]
+#    resources: ["configmaps", "pods", "services", "endpoints", "secrets"]
+#    verbs: ["get", "list", "watch"]
+#
+#---
+#
+#kind: RoleBinding
+#apiVersion: rbac.authorization.k8s.io/v1
+#metadata:
+#  name: namespace-reader-binding
+#  namespace: default
+#subjects:
+#  - kind: ServiceAccount
+#    name: default
+#    apiGroup: ""
+#roleRef:
+#  kind: Role
+#  name: namespace-reader
+#  apiGroup: ""
+#
+#---
+#
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: config-reader
+#  namespace: default
+#

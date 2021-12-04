@@ -1,0 +1,51 @@
+server:
+  shutdown: graceful
+
+spring:
+  thymeleaf:
+    cache: false
+  application:
+    name: springb-boot-kubernetes
+  cloud:
+    kubernetes:
+      discovery:
+      #        enabled: true
+      #        all-namespaces: true
+      reload:
+        enabled: true
+        mode: event
+#spring:
+#  thymeleaf:
+#    cache: false
+#  application:
+#    name: springb-boot-kubernetes
+#  cloud:
+#    kubernetes:
+#      reload:
+#        enabled: true
+#        mode: polling
+#        period: 2000
+#      config:
+#        sources:
+#          - name: ${spring.application.name}
+#        namespace: default
+#        include-profile-specific-sources: false
+app:
+  welcome:
+    message: Test Message From App 11
+    secret: My Secret 11
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    refresh:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
+    restart:
+      enabled: true

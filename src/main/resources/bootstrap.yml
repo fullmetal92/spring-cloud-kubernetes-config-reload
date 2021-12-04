@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: ck-app
+  cloud:
+    kubernetes:
+      client:
+        namespace: default
+      config:
+        name: ck-app-config
+        namespace: default
+      reload:
+        enabled: true
+        mode: polling
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    endpoint:
+      refresh:
+        enabled: true
+      health:
+        enabled: true
+      info:
+        enabled: true
+      restart:
+        enabled: true

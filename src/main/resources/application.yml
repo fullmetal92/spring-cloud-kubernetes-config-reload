@@ -1,0 +1,11 @@
+server:
+  shutdown: graceful
+
+spring:
+  thymeleaf:
+    cache: false
+
+app:
+  welcome:
+    message: Test Message From Config Map 105
+    secret: My Secret From Config Map 105

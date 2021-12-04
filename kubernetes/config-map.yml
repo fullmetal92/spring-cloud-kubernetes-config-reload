@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ck-app-config
+  namespace: default
+  labels:
+    spring.cloud.kubernetes.config: "true"
+data:
+  application.yml: |-
+    app:
+      welcome:
+        message: Test Message From Config Map DK 11 !!
+        secret: My Secret From Config Map Vandy 22 !!
